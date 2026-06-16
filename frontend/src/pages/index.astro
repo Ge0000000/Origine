@@ -27,15 +27,13 @@ if (!site) {
 // Variables pour le rendu conditionnel
 const isAnnuaire = siteSlug === 'annuaire-createurs-catholiques';
 
-let vitrineData = null;
+// Charger les données de la vitrine B2B ou la config Hero de l'annuaire
+let vitrineData = await getVitrineDataForSite(site.id);
 let creators = [];
 
 if (isAnnuaire) {
-  // Charger les fiches créateurs pour l'annuaire
+  // Charger en plus les fiches créateurs pour l'annuaire
   creators = await getCreatorsForAnnuaire();
-} else {
-  // Charger les données de la vitrine B2B (ex: Matikos)
-  vitrineData = await getVitrineDataForSite(site.id);
 }
 
 // Configuration SEO de base
