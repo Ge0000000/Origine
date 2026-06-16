@@ -1,0 +1,85 @@
+---
+interface Props {
+  siteNom: string;
+  email?: string;
+  telephone?: string;
+  adresse?: string;
+  siteSlug: string;
+}
+
+const { siteNom, email = "contact@origine.dev", telephone, adresse, siteSlug } = Astro.props;
+const currentYear = new Date().getFullYear();
+const isAnnuaire = siteSlug === 'annuaire-createurs-catholiques';
+---
+
+<footer class="border-t border-slate-200 bg-white text-slate-600">
+  <div class="mx-auto max-w-7xl px-4 py-12 md:px-8">
+    <div class="grid gap-8 md:grid-cols-3">
+      <!-- Section 1 : A Propos / Identité -->
+      <div>
+        <h3 class="text-lg font-semibold text-slate-900 mb-4">{siteNom}</h3>
+        <p class="text-sm text-slate-500">
+          {isAnnuaire 
+            ? "Le portail de référence pour découvrir, soutenir et s'inspirer du savoir-faire des artisans et créateurs chrétiens." 
+            : "Artisan de proximité engagé pour la qualité de vos travaux et la préservation de votre habitat."}
+        </p>
+      </div>
+
+      <!-- Section 2 : Navigation rapide -->
+      <div>
+        <h4 class="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">Navigation</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-slate-900 transition-colors">Accueil</a></li>
+          {isAnnuaire ? (
+            <li><a href="#createurs" class="hover:text-slate-900 transition-colors">Créateurs</a></li>
+          ) : (
+            <>
+              <li><a href="#services" class="hover:text-slate-900 transition-colors">Nos Services</a></li>
+              <li><a href="#realisations" class="hover:text-slate-900 transition-colors">Réalisations</a></li>
+            </>
+          )}
+          <li><a href="#contact" class="hover:text-slate-900 transition-colors">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Section 3 : Contact & Localisation -->
+      <div>
+        <h4 class="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">Contact</h4>
+        <ul class="space-y-2 text-sm text-slate-500">
+          {adresse && (
+            <li class="flex items-start space-x-2">
+              <svg class="h-5 w-5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>{adresse}</span>
+            </li>
+          )}
+          {telephone && (
+            <li class="flex items-center space-x-2">
+              <svg class="h-5 w-5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              <span>{telephone}</span>
+            </li>
+          )}
+          <li class="flex items-center space-x-2">
+            <svg class="h-5 w-5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <a href={`mailto:${email}`} class="hover:text-slate-900 transition-colors">{email}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="mt-8 border-t border-slate-100 pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-400">
+      <p>&copy; {currentYear} {siteNom}. Tous droits réservés.</p>
+      <div class="flex space-x-4 mt-4 md:mt-0">
+        <a href="/mentions-legales" class="hover:text-slate-600">Mentions Légales</a>
+        <a href="/politique-de-confidentialite" class="hover:text-slate-600">Confidentialité</a>
+      </div>
+    </div>
+  </div>
+</footer>

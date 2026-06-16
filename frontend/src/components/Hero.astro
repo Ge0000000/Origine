@@ -1,0 +1,68 @@
+---
+import { getAssetUrl } from '../lib/directus';
+
+interface Props {
+  titre: string;
+  description: string;
+  imageUuid?: string | null;
+  siteSlug: string;
+}
+
+const { titre, description, imageUuid, siteSlug } = Astro.props;
+const imageUrl = getAssetUrl(imageUuid);
+
+// Thèmes de boutons
+const btnThemeMap: Record<string, string> = {
+  'matikos': 'bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500',
+  'le-croisetier': 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500',
+  'annuaire-createurs-catholiques': 'bg-amber-600 hover:bg-amber-700 focus:ring-amber-500',
+  'site-c': 'bg-purple-600 hover:bg-purple-700 focus:ring-purple-500'
+};
+
+const textThemeMap: Record<string, string> = {
+  'matikos': 'text-emerald-200',
+  'le-croisetier': 'text-blue-200',
+  'annuaire-createurs-catholiques': 'text-amber-200',
+  'site-c': 'text-purple-200'
+};
+
+const btnTheme = btnThemeMap[siteSlug] || btnThemeMap['matikos'];
+const textTheme = textThemeMap[siteSlug] || textThemeMap['matikos'];
+---
+
+<section class="relative bg-slate-900 overflow-hidden py-24 md:py-32">
+  {imageUrl ? (
+    <!-- Image de fond si disponible -->
+    <div class="absolute inset-0 opacity-40">
+      <img src={imageUrl} alt="Background image" class="h-full w-full object-cover" />
+    </div>
+  ) : (
+    <!-- Sinon, dégradé subtil -->
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-850 opacity-90"></div>
+  )}
+
+  <div class="relative mx-auto max-w-7xl px-4 md:px-8">
+    <div class="max-w-3xl">
+      <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl leading-tight">
+        {titre}
+      </h1>
+      <p class={`mt-6 text-lg md:text-xl font-normal leading-relaxed ${textTheme}`}>
+        {description}
+      </p>
+      <div class="mt-10 flex flex-wrap gap-4">
+        <a
+          href="#contact"
+          class={`rounded-full px-8 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 ${btnTheme}`}
+        >
+          {siteSlug === 'annuaire-createurs-catholiques' ? 'Découvrir l\'annuaire' : 'Demander un devis gratuit'}
+        </a>
+        <a
+          href={siteSlug === 'annuaire-createurs-catholiques' ? '#createurs' : '#services'}
+          class="rounded-full border border-white/30 bg-white/10 px-8 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50 hover:scale-105"
+        >
+          En savoir plus
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

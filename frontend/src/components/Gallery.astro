@@ -1,0 +1,71 @@
+---
+import { getAssetUrl } from '../lib/directus';
+
+interface Props {
+  images: string[];
+  siteSlug: string;
+}
+
+const { images, siteSlug } = Astro.props;
+
+// Images par défaut si la galerie est vide
+const defaultImages: Record<string, { url: string; title: string }[]> = {
+  'matikos': [
+    { url: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800&auto=format&fit=crop&q=80', title: 'Menuiserie d\'intérieur' },
+    { url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800&auto=format&fit=crop&q=80', title: 'Pose de parquet massif' },
+    { url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format&fit=crop&q=80', title: 'Rénovation de cloisons' }
+  ],
+  'le-croisetier': [
+    { url: 'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?w=800&auto=format&fit=crop&q=80', title: 'Charpente traditionnelle' },
+    { url: 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=800&auto=format&fit=crop&q=80', title: 'Aménagement extérieur' },
+    { url: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800&auto=format&fit=crop&q=80', title: 'Isolation de toiture' }
+  ]
+};
+
+const defaultGallery = defaultImages[siteSlug] || defaultImages['matikos'];
+const hasImages = images && images.length > 0;
+---
+
+<section id="realisations" class="py-20 bg-slate-50">
+  <div class="mx-auto max-w-7xl px-4 md:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Nos Réalisations</h2>
+      <p class="mt-4 text-lg text-slate-500">
+        Aperçu de nos derniers chantiers. Nous accordons un soin tout particulier aux détails et aux finitions de chaque projet.
+      </p>
+    </div>
+
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      {hasImages ? (
+        images.map((imgUuid, index) => {
+          const url = getAssetUrl(imgUuid);
+          return url ? (
+            <div class="group relative overflow-hidden rounded-2xl bg-slate-200 aspect-[4/3] shadow-md hover:shadow-xl transition-all duration-300">
+              <img 
+                src={url} 
+                alt={`Réalisation #${index + 1}`} 
+                class="h-full w-full object-cover transition-all duration-500 group-hover:scale-110" 
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                <span class="text-white font-semibold">Projet Réalisé #{index + 1}</span>
+              </div>
+            </div>
+          ) : null;
+        })
+      ) : (
+        defaultGallery.map((item) => (
+          <div class="group relative overflow-hidden rounded-2xl bg-slate-200 aspect-[4/3] shadow-md hover:shadow-xl transition-all duration-300">
+            <img 
+              src={item.url} 
+              alt={item.title} 
+              class="h-full w-full object-cover transition-all duration-500 group-hover:scale-110" 
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+              <span class="text-white font-semibold">{item.title}</span>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  </div>
+</section>

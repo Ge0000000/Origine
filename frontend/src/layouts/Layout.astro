@@ -1,0 +1,80 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  siteSlug: string;
+}
+
+const { title, description = "Micro-Agence Web Headless - Site Client", siteSlug } = Astro.props;
+
+// Configuration des thèmes de couleurs selon le site actif (SITE_SLUG)
+const themeMap: Record<string, { primary: string; accent: string; fontClass: string }> = {
+  'matikos': {
+    primary: 'from-emerald-600 to-teal-700',
+    accent: 'text-emerald-600 bg-emerald-50 border-emerald-100',
+    fontClass: 'font-outfit'
+  },
+  'le-croisetier': {
+    primary: 'from-blue-600 to-indigo-700',
+    accent: 'text-blue-600 bg-blue-50 border-blue-100',
+    fontClass: 'font-inter'
+  },
+  'annuaire-createurs-catholiques': {
+    primary: 'from-amber-600 to-yellow-700',
+    accent: 'text-amber-600 bg-amber-50 border-amber-100',
+    fontClass: 'font-outfit'
+  },
+  'site-c': {
+    primary: 'from-purple-600 to-pink-700',
+    accent: 'text-purple-600 bg-purple-50 border-purple-100',
+    fontClass: 'font-inter'
+  }
+};
+
+const theme = themeMap[siteSlug] || themeMap['matikos'];
+---
+
+<!doctype html>
+<html lang="fr" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- Méta SEO dynamiques -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    
+    <!-- Google Fonts: Outfit (moderne, géométrique) et Inter (neutre, lisible) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body class={`${theme.fontClass} min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-100 selection:text-emerald-900`}>
+    
+    <!-- Slot pour injecter le Header/Navbar de la page -->
+    <slot name="header" />
+    
+    <!-- Contenu principal -->
+    <main class="flex-grow">
+      <slot />
+    </main>
+    
+    <!-- Slot pour injecter le Footer de la page -->
+    <slot name="footer" />
+    
+  </body>
+</html>
+
+<style is:global>
+  /* Définition des familles de polices globales */
+  .font-outfit {
+    font-family: 'Outfit', sans-serif;
+  }
+  .font-inter {
+    font-family: 'Inter', sans-serif;
+  }
+</style>

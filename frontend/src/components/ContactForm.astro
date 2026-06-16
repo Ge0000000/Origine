@@ -1,0 +1,106 @@
+---
+interface Props {
+  email: string;
+  siteSlug: string;
+}
+
+const { email, siteSlug } = Astro.props;
+
+// Configuration des styles de focus et bouton selon le thème
+const inputThemeMap: Record<string, string> = {
+  'matikos': 'focus:ring-emerald-500 focus:border-emerald-500',
+  'le-croisetier': 'focus:ring-blue-500 focus:border-blue-500',
+  'annuaire-createurs-catholiques': 'focus:ring-amber-500 focus:border-amber-500',
+  'site-c': 'focus:ring-purple-500 focus:border-purple-500'
+};
+
+const btnThemeMap: Record<string, string> = {
+  'matikos': 'bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500',
+  'le-croisetier': 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500',
+  'annuaire-createurs-catholiques': 'bg-amber-600 hover:bg-amber-700 focus:ring-amber-500',
+  'site-c': 'bg-purple-600 hover:bg-purple-700 focus:ring-purple-500'
+};
+
+const inputTheme = inputThemeMap[siteSlug] || inputThemeMap['matikos'];
+const btnTheme = btnThemeMap[siteSlug] || btnThemeMap['matikos'];
+---
+
+<section id="contact" class="py-20 bg-white">
+  <div class="mx-auto max-w-7xl px-4 md:px-8">
+    <div class="grid gap-12 lg:grid-cols-2 items-center">
+      <!-- Section texte -->
+      <div>
+        <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Un Projet ? Contactez-nous</h2>
+        <p class="mt-4 text-lg text-slate-500 leading-relaxed">
+          Que ce soit pour un renseignement, une demande de tarif ou pour planifier une intervention à Segré et ses alentours, remplissez notre formulaire. Nous vous répondrons sous 24 heures.
+        </p>
+        <div class="mt-8 space-y-4">
+          <div class="flex items-center space-x-3">
+            <span class="text-xl">📧</span>
+            <div>
+              <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Email Direct</p>
+              <a href={`mailto:${email}`} class="text-sm font-semibold text-slate-700 hover:underline">{email}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Formulaire -->
+      <div class="glass-card p-8 md:p-10 rounded-3xl border border-slate-200/50 shadow-lg">
+        <form action="#" class="space-y-6">
+          <div class="grid gap-6 sm:grid-cols-2">
+            <div>
+              <label for="firstname" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Prénom</label>
+              <input 
+                type="text" 
+                name="firstname" 
+                id="firstname" 
+                required 
+                class={`w-full rounded-xl border-slate-200 bg-white/50 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 ${inputTheme}`}
+              />
+            </div>
+            <div>
+              <label for="lastname" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Nom</label>
+              <input 
+                type="text" 
+                name="lastname" 
+                id="lastname" 
+                required 
+                class={`w-full rounded-xl border-slate-200 bg-white/50 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 ${inputTheme}`}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label for="form-email" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Email</label>
+            <input 
+              type="email" 
+              name="email" 
+              id="form-email" 
+              required 
+              class={`w-full rounded-xl border-slate-200 bg-white/50 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 ${inputTheme}`}
+            />
+          </div>
+
+          <div>
+            <label for="message" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Votre message</label>
+            <textarea 
+              name="message" 
+              id="message" 
+              rows="4" 
+              required 
+              class={`w-full rounded-xl border-slate-200 bg-white/50 text-sm shadow-sm transition-all focus:outline-none focus:ring-2 ${inputTheme}`}
+            ></textarea>
+          </div>
+
+          <button 
+            type="submit" 
+            class={`w-full rounded-xl py-3 text-sm font-semibold text-white shadow-md transition-all hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 ${btnTheme}`}
+          >
+            Envoyer ma demande
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

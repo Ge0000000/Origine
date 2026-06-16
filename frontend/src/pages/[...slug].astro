@@ -1,0 +1,101 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+import { 
+  getSiteDataBySlug, 
+  getPagesForSite,
+  getVitrineDataForSite 
+} from '../lib/directus';
+
+// 1. getStaticPaths est requis pour générer les pages au moment du build (SSG)
+export async function getStaticPaths() {
+  const siteSlug = process.env.SITE_SLUG || 'matikos';
+  const site = await getSiteDataBySlug(siteSlug);
+
+  if (!site) {
+    console.warn(`[StaticPaths] Aucun site trouvé pour le slug: ${siteSlug}`);
+    return [];
+  }
+
+  const pages = await getPagesForSite(site.id);
+  
+  // Filtrer pour exclure la page d'accueil si elle utilise un slug comme 'accueil' ou 'index'
+  // car celle-ci est déjà gérée par index.astro à la racine
+  const subPages = pages.filter(p => p.slug !== 'accueil' && p.slug !== 'index' && p.slug !== '');
+
+  return subPages.map((page) => ({
+    params: { slug: page.slug },
+    props: { page, site }
+  }));
+}
+
+const { page, site } = Astro.props;
+const siteSlug = process.env.SITE_SLUG || 'matikos';
+
+// Charger les données de la vitrine pour avoir les contacts en footer (si ce n'est pas l'annuaire)
+let vitrineData = null;
+if (siteSlug !== 'annuaire-createurs-catholiques') {
+  vitrineData = await getVitrineDataForSite(site.id);
+}
+---
+
+<Layout title={`${page.titre} | ${site.nom}`} description={page.meta_description} siteSlug={siteSlug}>
+  
+  <!-- Navbar -->
+  <Navbar slot="header" siteNom={site.nom} siteSlug={siteSlug} />
+
+  <!-- En-tête de la page -->
+  <div class="bg-slate-900 py-16 text-center text-white">
+    <div class="mx-auto max-w-4xl px-4">
+      <h1 class="text-3xl font-extrabold sm:text-4xl md:text-5xl">{page.titre}</h1>
+    </div>
+  </div>
+
+  <!-- Contenu principal stylisé de manière premium sans plugin prose -->
+  <section class="py-16 bg-white">
+    <div class="mx-auto max-w-3xl px-4">
+      <div 
+        class="rich-text-content text-slate-600 leading-relaxed space-y-6 text-base md:text-lg"
+        set:html={page.contenu}
+      />
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <Footer 
+    slot="footer" 
+    siteNom={site.nom} 
+    email={siteSlug === 'annuaire-createurs-catholiques' ? 'contact@origine.dev' : vitrineData?.email}
+    telephone={siteSlug === 'annuaire-createurs-catholiques' ? undefined : vitrineData?.telephone}
+    adresse={siteSlug === 'annuaire-createurs-catholiques' ? undefined : vitrineData?.adresse}
+    siteSlug={siteSlug}
+  />
+
+</Layout>
+
+<style is:global>
+  /* Stylisation fine des éléments HTML générés par le WYSIWYG */
+  .rich-text-content h2 {
+    @apply text-2xl font-bold text-slate-950 mt-10 mb-4 border-b border-slate-100 pb-2;
+  }
+  .rich-text-content h3 {
+    @apply text-xl font-bold text-slate-900 mt-6 mb-3;
+  }
+  .rich-text-content p {
+    @apply mb-4;
+  }
+  .rich-text-content strong {
+    @apply font-semibold text-slate-900;
+  }
+  .rich-text-content a {
+    @apply text-emerald-600 hover:text-emerald-700 underline font-medium transition-colors;
+  }
+  .rich-text-content ul {
+    @apply list-disc list-inside pl-4 mb-4 space-y-2;
+  }
+  .rich-text-content ol {
+    @apply list-decimal list-inside pl-4 mb-4 space-y-2;
+  }
+</style>

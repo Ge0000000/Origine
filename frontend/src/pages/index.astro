@@ -1,0 +1,115 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import Services from '../components/Services.astro';
+import Gallery from '../components/Gallery.astro';
+import ContactForm from '../components/ContactForm.astro';
+import CreatorCard from '../components/CreatorCard.astro';
+
+import { 
+  getSiteDataBySlug, 
+  getVitrineDataForSite, 
+  getCreatorsForAnnuaire 
+} from '../lib/directus';
+
+// Récupération de la variable d'environnement au moment du build (process.env sur Node.js)
+const siteSlug = process.env.SITE_SLUG || 'matikos';
+
+// Récupération des données du site depuis Directus
+const site = await getSiteDataBySlug(siteSlug);
+
+if (!site) {
+  throw new Error(`Site introuvable ou inactif dans Directus pour le slug : ${siteSlug}`);
+}
+
+// Variables pour le rendu conditionnel
+const isAnnuaire = siteSlug === 'annuaire-createurs-catholiques';
+
+let vitrineData = null;
+let creators = [];
+
+if (isAnnuaire) {
+  // Charger les fiches créateurs pour l'annuaire
+  creators = await getCreatorsForAnnuaire();
+} else {
+  // Charger les données de la vitrine B2B (ex: Matikos)
+  vitrineData = await getVitrineDataForSite(site.id);
+}
+
+// Configuration SEO de base
+const seoTitle = isAnnuaire 
+  ? site.nom 
+  : (vitrineData?.hero_titre || site.nom);
+
+const seoDesc = isAnnuaire 
+  ? "Découvrez l'annuaire des créateurs chrétiens et soutenez l'artisanat catholique."
+  : (vitrineData?.hero_description || "Site vitrine client.");
+---
+
+<Layout title={seoTitle} description={seoDesc} siteSlug={siteSlug}>
+  
+  <!-- Navbar injectée dans le slot header -->
+  <Navbar slot="header" siteNom={site.nom} siteSlug={siteSlug} />
+
+  <!-- SECTION COMMUNE : HERO -->
+  <Hero 
+    titre={isAnnuaire ? site.nom : (vitrineData?.hero_titre || "Accueil")}
+    description={isAnnuaire 
+      ? "Soutenez l'économie chrétienne en découvrant les meilleurs créateurs, créatrices et artisans d'art catholiques." 
+      : (vitrineData?.hero_description || "")}
+    imageUuid={vitrineData?.hero_image}
+    siteSlug={siteSlug}
+  />
+
+  {isAnnuaire ? (
+    /* ================= LANDING PAGE DE L'ANNUAIRE ================= */
+    <section id="createurs" class="py-20 bg-slate-50">
+      <div class="mx-auto max-w-7xl px-4 md:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            Nos Créateurs Catholiques
+          </h2>
+          <p class="mt-4 text-lg text-slate-500">
+            Découvrez nos créations chrétiennes artisanales classées par ordre de mise en avant.
+          </p>
+        </div>
+
+        {creators.length === 0 ? (
+          <div class="text-center py-12 text-slate-400">
+            <p>Aucun créateur répertorié pour le moment. Revenez bientôt !</p>
+          </div>
+        ) : (
+          <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {creators.map((creator) => (
+              <CreatorCard createur={creator} />
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  ) : (
+    /* ================= LANDING PAGE VITRINE (B2B) ================= */
+    <>
+      {vitrineData?.services && (
+        <Services services={vitrineData.services} siteSlug={siteSlug} />
+      )}
+      
+      <Gallery images={vitrineData?.realisations || []} siteSlug={siteSlug} />
+      
+      <ContactForm email={vitrineData?.email || "contact@origine.dev"} siteSlug={siteSlug} />
+    </>
+  )}
+
+  <!-- Footer injecté dans le slot footer -->
+  <Footer 
+    slot="footer" 
+    siteNom={site.nom} 
+    email={isAnnuaire ? "contact@origine.dev" : vitrineData?.email}
+    telephone={isAnnuaire ? undefined : vitrineData?.telephone}
+    adresse={isAnnuaire ? undefined : vitrineData?.adresse}
+    siteSlug={siteSlug}
+  />
+
+</Layout>
