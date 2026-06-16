@@ -7,11 +7,13 @@ import Services from '../components/Services.astro';
 import Gallery from '../components/Gallery.astro';
 import ContactForm from '../components/ContactForm.astro';
 import CreatorCard from '../components/CreatorCard.astro';
+import Products from '../components/Products.astro';
 
 import { 
   getSiteDataBySlug, 
   getVitrineDataForSite, 
   getCreatorsForAnnuaire,
+  getProductsForSite,
   getAssetUrl
 } from '../lib/directus';
 
@@ -31,10 +33,14 @@ const isAnnuaire = siteSlug === 'annuaire-createurs-catholiques';
 // Charger les données de la vitrine B2B ou la config Hero de l'annuaire
 let vitrineData = await getVitrineDataForSite(site.id);
 let creators = [];
+let produits = [];
 
 if (isAnnuaire) {
   // Charger en plus les fiches créateurs pour l'annuaire
   creators = await getCreatorsForAnnuaire();
+} else {
+  // Charger les produits E-commerce
+  produits = await getProductsForSite(site.id);
 }
 
 // Configuration SEO de base
@@ -114,9 +120,13 @@ const schema = isAnnuaire
       </div>
     </section>
   ) : (
-    /* ================= LANDING PAGE VITRINE (B2B) ================= */
+    /* ================= LANDING PAGE VITRINE (B2B & E-COMMERCE) ================= */
     <>
-      {vitrineData?.services && (
+      {produits.length > 0 && (
+        <Products produits={produits} />
+      )}
+
+      {vitrineData?.services && produits.length === 0 && (
         <Services services={vitrineData.services} siteSlug={siteSlug} />
       )}
       

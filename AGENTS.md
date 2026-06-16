@@ -61,7 +61,7 @@
 |---------|--------|-----|---------|
 | CapRover | ✅ ACTIF | http://captain.37.187.219.15.nip.io | - |
 | Directus CMS | ✅ ACTIF | http://directus.37.187.219.15.nip.io | 300 Mo |
-| Uptime Kuma | ⏳ À déployer | http://kuma.37.187.219.15.nip.io | 128 Mo |
+| Uptime Kuma | ✅ ACTIF | https://kuma.37.187.219.15.nip.io | 128 Mo |
 
 ---
 
@@ -120,7 +120,7 @@ sudo docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 | Phase 2 | J4-J6 | ✅ TERMINÉ | Template Astro, connexion Directus, build local |
 | Phase 3 | J7-J8 | ✅ TERMINÉ | Cloudflare Pages, webhooks, whitelist UFW |
 | Phase 4 | J9-J10 | ✅ TERMINÉ | Personnalisation sites + annuaire, contenu |
-| Phase 5 | J11+ | ⏳ Prochain | Monitoring, docs, lancement commercial |
+| Phase 5 | J11+ | ✅ TERMINÉ | Monitoring, docs, lancement commercial |
 
 ---
 
@@ -135,4 +135,4 @@ sudo docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 - **2026-06-16** : Phase 1 terminée : Déploiement Directus 11.17.4 (SQLite), modélisation des 4 sites, rôles Public/Editor et limitation RAM à 300 Mo.
 - **2026-06-16** : Phase 2 terminée : Gabarit unique Astro 5.x multi-tenant, intégration Directus SDK et Tailwind CSS, tests de compilation locale validés.
 - **2026-06-16** : Phase 3 terminée : Configuration des webhooks Directus -> Cloudflare Pages.
-- **2026-06-16** : Phase 4 terminée : Design Premium (Astro/Tailwind), images IA générées (Matikos, Annuaire), et injection du contenu réel via API. Mise en ligne sur https://matikos.pages.dev et https://annuairev1catho.pages.dev.
+- **2026-06-16** : Phase 5 terminée : Déploiement de Uptime Kuma via API CapRover (RAM limitée à 128 Mo) pour le monitoring des endpoints. Le projet est intégralement clôturé et en production !

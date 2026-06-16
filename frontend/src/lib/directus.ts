@@ -92,3 +92,22 @@ export function getAssetUrl(fileId: string | null | undefined): string | null {
   if (!fileId) return null;
   return `${directusUrl}/assets/${fileId}`;
 }
+
+/**
+ * Récupère les produits associés à un ID de site
+ */
+export async function getProductsForSite(siteId: string) {
+  try {
+    return await directus.request(
+      readItems('produits', {
+        filter: {
+          site_id: { _eq: siteId },
+          status: { _eq: 'published' }
+        }
+      })
+    );
+  } catch (error) {
+    console.error(`Erreur getProductsForSite pour le site '${siteId}':`, error);
+    return [];
+  }
+}

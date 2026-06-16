@@ -1,0 +1,59 @@
+---
+import { getAssetUrl } from '../lib/directus';
+
+interface Props {
+  produits: any[];
+}
+
+const { produits } = Astro.props;
+---
+
+{produits.length > 0 && (
+  <section id="produit" class="py-24 bg-white relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center max-w-3xl mx-auto mb-16 reveal-on-scroll">
+        <h2 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl mb-6">Le Cadeau Idéal</h2>
+        <p class="text-xl text-slate-600">Pour accompagner les grands moments de la vie avec une pièce unique.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        {produits.map((produit) => (
+          <>
+            <div class="relative rounded-3xl overflow-hidden shadow-2xl reveal-on-scroll group">
+              {produit.image ? (
+                <img 
+                  src={getAssetUrl(produit.image)} 
+                  alt={produit.nom}
+                  class="w-full object-cover aspect-[4/5] transform transition-transform duration-700 group-hover:scale-105"
+                  loading="lazy"
+                />
+              ) : (
+                <div class="w-full aspect-[4/5] bg-slate-100 flex items-center justify-center">
+                  <span class="text-slate-400">Photo indisponible</span>
+                </div>
+              )}
+            </div>
+
+            <div class="flex flex-col justify-center space-y-8 reveal-on-scroll" style="transition-delay: 200ms;">
+              <div>
+                <h3 class="text-3xl font-bold text-slate-900 mb-4">{produit.nom}</h3>
+                <div class="prose prose-lg text-slate-600 mb-8" set:html={produit.description} />
+                
+                <div class="flex items-center gap-6">
+                  <a 
+                    href={produit.lien_stripe} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white transition-all bg-emerald-600 rounded-full hover:bg-emerald-700 hover:shadow-lg hover:-translate-y-1 focus:ring-4 focus:ring-emerald-300"
+                  >
+                    Commander — {produit.prix} €
+                  </a>
+                </div>
+              </div>
+            </div>
+          </>
+        ))}
+      </div>
+    </div>
+  </section>
+)}

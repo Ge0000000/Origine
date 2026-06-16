@@ -47,10 +47,22 @@ export interface Createur {
   statut: 'draft' | 'published';
 }
 
+export interface Produit {
+  id: string; // UUID
+  status: 'draft' | 'published';
+  site_id: string; // UUID
+  nom: string;
+  description: string;
+  prix: number;
+  lien_stripe: string;
+  image: string | null; // UUID
+}
+
 // Schéma Directus complet pour typage strict du client SDK
 export interface Schema {
   sites: Site[];
   pages: Page[];
   vitrines: Vitrine[];
   annuaire_createurs: Createur[];
+  produits: Produit[];
 }
