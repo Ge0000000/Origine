@@ -1,15 +1,24 @@
 ---
+import { ViewTransitions } from 'astro:transitions';
 import '../styles/global.css';
 
 interface Props {
   title: string;
   description?: string;
   siteSlug: string;
+  ogImage?: string | null;
+  schema?: any;
 }
 
-const { title, description = "Micro-Agence Web Headless - Site Client", siteSlug } = Astro.props;
+const { 
+  title, 
+  description = "Micro-Agence Web Headless - Site Client", 
+  siteSlug,
+  ogImage,
+  schema
+} = Astro.props;
 
-// Configuration des thèmes de couleurs selon le site actif (SITE_SLUG)
+// Configuration des thèmes de couleurs
 const themeMap: Record<string, { primary: string; accent: string; fontClass: string }> = {
   'matikos': {
     primary: 'from-emerald-600 to-teal-700',
@@ -34,6 +43,7 @@ const themeMap: Record<string, { primary: string; accent: string; fontClass: str
 };
 
 const theme = themeMap[siteSlug] || themeMap['matikos'];
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || Astro.url.origin);
 ---
 
 <!doctype html>
@@ -43,15 +53,37 @@ const theme = themeMap[siteSlug] || themeMap['matikos'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonicalURL} />
     
     <!-- Méta SEO dynamiques -->
     <title>{title}</title>
     <meta name="description" content={description} />
     
-    <!-- Google Fonts: Outfit (moderne, géométrique) et Inter (neutre, lisible) -->
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    {ogImage && <meta property="twitter:image" content={ogImage} />}
+    
+    <!-- Schema.org JSON-LD -->
+    {schema && (
+      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    )}
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <ViewTransitions />
   </head>
   <body class={`${theme.fontClass} min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-100 selection:text-emerald-900`}>
     
@@ -66,6 +98,34 @@ const theme = themeMap[siteSlug] || themeMap['matikos'];
     <!-- Slot pour injecter le Footer de la page -->
     <slot name="footer" />
     
+    <script>
+      // Animation au scroll (Intersection Observer)
+      const setupObserver = () => {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              // Si l'élément a la classe .reveal-on-scroll, on lance l'animation
+              entry.target.classList.add('animate-fade-in-up');
+              entry.target.classList.remove('opacity-0');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.1,
+          rootMargin: "0px 0px -50px 0px"
+        });
+
+        // Cibler tous les éléments avec reveal-on-scroll
+        document.querySelectorAll('.reveal-on-scroll').forEach((el) => {
+          el.classList.add('opacity-0'); // Cacher par défaut
+          observer.observe(el);
+        });
+      };
+
+      // Exécuter au chargement et après les ViewTransitions
+      setupObserver();
+      document.addEventListener('astro:after-swap', setupObserver);
+    </script>
   </body>
 </html>
 
@@ -76,5 +136,20 @@ const theme = themeMap[siteSlug] || themeMap['matikos'];
   }
   .font-inter {
     font-family: 'Inter', sans-serif;
+  }
+  
+  /* Scrollbar personnalisée */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
   }
 </style>

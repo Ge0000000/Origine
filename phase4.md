@@ -24,3 +24,7 @@ Via l'API de Directus, nous avons configuré les vitrines avec du vrai contenu d
 - **L'Annuaire :** Création de fiches créateurs (ex: "Atelier Saint Joseph", "Lumière du Ciel") pour tester le design des cartes et de la grille.
 
 *La mise à jour de ces données a automatiquement déclenché les webhooks vers Cloudflare Pages !*
+
+## 4. Sites en Ligne 🚀
+- **Matikos :** https://matikos.pages.dev
+- **L'Annuaire :** https://annuairev1catho.pages.dev

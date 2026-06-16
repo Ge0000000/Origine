@@ -23,7 +23,9 @@ Les sites clients sont déployés sur Cloudflare Pages à partir du dépôt GitH
   - `DIRECTUS_URL` : http://directus.37.187.219.15.nip.io
   - `SITE_SLUG` : `matikos`, `annuaire`, etc.
 
-*Statut : ✅ TERMINÉ (Matikos et Annuaire)*
+*Statut : ✅ TERMINÉ*
+- **Matikos** : https://matikos.pages.dev
+- **Annuaire** : https://annuairev1catho.pages.dev
 
 ## 3. Webhooks Directus → Cloudflare Pages
 Pour que les sites se mettent à jour automatiquement lorsque vous modifiez le contenu dans Directus, nous configurons des webhooks. Directus enverra une requête POST à Cloudflare pour déclencher un nouveau build.

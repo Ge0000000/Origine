@@ -28,7 +28,7 @@ const hasImages = images && images.length > 0;
 
 <section id="realisations" class="py-24 bg-white relative">
   <div class="mx-auto max-w-7xl px-4 md:px-8">
-    <div class="text-center max-w-3xl mx-auto mb-20 animate-fade-in-up">
+    <div class="text-center max-w-3xl mx-auto mb-20 reveal-on-scroll">
       <h2 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl mb-6">Nos Réalisations</h2>
       <p class="text-lg md:text-xl text-slate-600 leading-relaxed">
         Aperçu de nos derniers chantiers. Nous accordons un soin tout particulier aux détails et aux finitions de chaque projet, pour un résultat irréprochable.
@@ -43,7 +43,7 @@ const hasImages = images && images.length > 0;
           // Alternance des tailles pour un effet masonry
           const rowSpan = index % 4 === 0 || index % 5 === 0 ? 'row-span-2' : 'row-span-1';
           return url ? (
-            <div class={`group relative overflow-hidden rounded-3xl bg-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 ease-in-out hover:-translate-y-2 animate-fade-in-up ${rowSpan}`} style={`animation-delay: ${index * 150}ms; animation-fill-mode: both;`}>
+            <div class={`group relative overflow-hidden rounded-3xl bg-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 ease-in-out hover:-translate-y-2 reveal-on-scroll ${rowSpan}`} style={`transition-delay: ${index * 100}ms;`}>
               <img 
                 src={url} 
                 alt={`Réalisation #${index + 1}`} 
@@ -59,7 +59,7 @@ const hasImages = images && images.length > 0;
         defaultGallery.map((item, index) => {
           const rowSpan = index % 3 === 0 ? 'row-span-2' : 'row-span-1';
           return (
-          <div class={`group relative overflow-hidden rounded-3xl bg-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 ease-in-out hover:-translate-y-2 animate-fade-in-up ${rowSpan}`} style={`animation-delay: ${index * 150}ms; animation-fill-mode: both;`}>
+          <div class={`group relative overflow-hidden rounded-3xl bg-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 ease-in-out hover:-translate-y-2 reveal-on-scroll ${rowSpan}`} style={`transition-delay: ${index * 100}ms;`}>
             <img 
               src={item.url} 
               alt={item.title} 

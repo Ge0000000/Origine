@@ -80,10 +80,10 @@
 
 ```
 Directus (CMS central)
-├── Site #1 : Vitrine Client A  → Cloudflare Pages (repo: site-client-a)
-├── Site #2 : Vitrine Client B  → Cloudflare Pages (repo: site-client-b)
-├── Site #3 : Vitrine Client C  → Cloudflare Pages (repo: site-client-c)
-└── Site #4 : Annuaire de Niche → Cloudflare Pages (repo: annuaire-niche)
+├── Site #1 : Matikos (Menuisier Plâtrier) → https://matikos.pages.dev
+├── Site #2 : Le Croisetier (Artisan)      → À déployer
+├── Site #3 : Vitrine Client C             → Cloudflare Pages
+└── Site #4 : Annuaire Créateurs Cathos    → https://annuairev1catho.pages.dev
 ```
 
 Chaque site est filtré par `site_id` dans Directus.
@@ -118,9 +118,9 @@ sudo docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 | Phase 0 | J1 | ✅ TERMINÉ | Setup Ubuntu, snapd, swap, CapRover, AGENTS.md |
 | Phase 1 | J2-J3 | ✅ TERMINÉ | Deploy Directus SQLite, modélisation données, test API |
 | Phase 2 | J4-J6 | ✅ TERMINÉ | Template Astro, connexion Directus, build local |
-| Phase 3 | J7-J8 | ⏳ Prochain | Cloudflare Pages, webhooks, whitelist UFW |
-| Phase 4 | J9-J10 | 🔲 À venir | Personnalisation sites + annuaire, contenu |
-| Phase 5 | J11+ | 🔲 À venir | Monitoring, docs, lancement commercial |
+| Phase 3 | J7-J8 | ✅ TERMINÉ | Cloudflare Pages, webhooks, whitelist UFW |
+| Phase 4 | J9-J10 | ✅ TERMINÉ | Personnalisation sites + annuaire, contenu |
+| Phase 5 | J11+ | ⏳ Prochain | Monitoring, docs, lancement commercial |
 
 ---
 
@@ -134,3 +134,5 @@ sudo docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 - **2026-06-16** : AGENTS.md créé (ce fichier)
 - **2026-06-16** : Phase 1 terminée : Déploiement Directus 11.17.4 (SQLite), modélisation des 4 sites, rôles Public/Editor et limitation RAM à 300 Mo.
 - **2026-06-16** : Phase 2 terminée : Gabarit unique Astro 5.x multi-tenant, intégration Directus SDK et Tailwind CSS, tests de compilation locale validés.
+- **2026-06-16** : Phase 3 terminée : Configuration des webhooks Directus -> Cloudflare Pages.
+- **2026-06-16** : Phase 4 terminée : Design Premium (Astro/Tailwind), images IA générées (Matikos, Annuaire), et injection du contenu réel via API. Mise en ligne sur https://matikos.pages.dev et https://annuairev1catho.pages.dev.

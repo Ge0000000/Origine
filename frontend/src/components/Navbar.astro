@@ -33,10 +33,10 @@ const btnThemeMap: Record<string, string> = {
 const btnTheme = btnThemeMap[siteSlug] || btnThemeMap['matikos'];
 ---
 
-<header class="sticky top-0 z-50 w-full border-b border-slate-200/50 bg-white/80 backdrop-blur-md">
+<header class="sticky top-0 z-50 w-full border-b border-slate-200/50 bg-white/90 backdrop-blur-md transition-all" id="main-navbar">
   <div class="mx-auto flex max-w-7xl items-center justify-between p-4 md:px-8">
     <!-- Logo / Nom du Site -->
-    <a href="#" class="flex items-center space-x-2 text-xl font-bold tracking-tight text-slate-900 md:text-2xl">
+    <a href="#" class="flex items-center space-x-2 text-xl font-bold tracking-tight text-slate-900 md:text-2xl z-50 relative">
       <span class="bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">{siteNom}</span>
     </a>
 
@@ -52,21 +52,89 @@ const btnTheme = btnThemeMap[siteSlug] || btnThemeMap['matikos'];
       ))}
       <a 
         href="#contact" 
-        class={`rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-wider transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${btnTheme}`}
+        class={`rounded-full px-5 py-2.5 text-xs font-semibold uppercase tracking-wider transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${btnTheme}`}
       >
         {isAnnuaire ? 'S\'inscrire' : 'Devenir client'}
       </a>
     </nav>
 
-    <!-- Bouton Mobile (Basique pour démo, extensible en JS) -->
+    <!-- Bouton Mobile Burger -->
     <button 
+      id="mobile-menu-btn"
       type="button" 
-      class="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 md:hidden"
-      aria-label="Menu"
+      class="flex h-12 w-12 items-center justify-center rounded-lg text-slate-600 md:hidden z-50 relative hover:bg-slate-100 transition-colors"
+      aria-label="Menu Mobile"
     >
-      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg id="burger-icon" class="h-6 w-6 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      <svg id="close-icon" class="h-6 w-6 absolute inset-0 m-auto opacity-0 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </button>
   </div>
+
+  <!-- Menu Mobile Coulissant -->
+  <div id="mobile-menu" class="fixed inset-0 z-40 bg-white/95 backdrop-blur-xl translate-x-full transition-transform duration-300 md:hidden flex flex-col pt-24 px-6 pb-8 h-[100dvh]">
+    <nav class="flex flex-col space-y-6 text-center">
+      {navLinks.map((link) => (
+        <a 
+          href={link.href} 
+          class="mobile-link text-2xl font-bold text-slate-800 transition-colors hover:text-emerald-600"
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+    <div class="mt-auto pt-8 flex justify-center">
+      <a 
+        href="#contact" 
+        class={`mobile-link rounded-full px-8 py-4 text-sm font-bold uppercase tracking-wider transition-all shadow-md w-full text-center ${btnTheme}`}
+      >
+        {isAnnuaire ? 'S\'inscrire' : 'Devenir client'}
+      </a>
+    </div>
+  </div>
 </header>
+
+<script>
+  // Script gérant l'ouverture/fermeture du menu mobile
+  const setupMobileMenu = () => {
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    const burgerIcon = document.getElementById('burger-icon');
+    const closeIcon = document.getElementById('close-icon');
+    const links = document.querySelectorAll('.mobile-link');
+    let isOpen = false;
+
+    if (!btn || !menu) return;
+
+    const toggleMenu = () => {
+      isOpen = !isOpen;
+      if (isOpen) {
+        menu.classList.remove('translate-x-full');
+        document.body.style.overflow = 'hidden'; // Empêche le scroll en arrière-plan
+        burgerIcon?.classList.add('opacity-0');
+        closeIcon?.classList.remove('opacity-0');
+      } else {
+        menu.classList.add('translate-x-full');
+        document.body.style.overflow = '';
+        burgerIcon?.classList.remove('opacity-0');
+        closeIcon?.classList.add('opacity-0');
+      }
+    };
+
+    btn.addEventListener('click', toggleMenu);
+
+    // Fermer le menu quand on clique sur un lien
+    links.forEach(link => {
+      link.addEventListener('click', () => {
+        if (isOpen) toggleMenu();
+      });
+    });
+  };
+
+  // Setup initial et après navigation
+  setupMobileMenu();
+  document.addEventListener('astro:after-swap', setupMobileMenu);
+</script>

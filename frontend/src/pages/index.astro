@@ -11,7 +11,8 @@ import CreatorCard from '../components/CreatorCard.astro';
 import { 
   getSiteDataBySlug, 
   getVitrineDataForSite, 
-  getCreatorsForAnnuaire 
+  getCreatorsForAnnuaire,
+  getAssetUrl
 } from '../lib/directus';
 
 // Récupération de la variable d'environnement au moment du build (process.env sur Node.js)
@@ -44,9 +45,34 @@ const seoTitle = isAnnuaire
 const seoDesc = isAnnuaire 
   ? "Découvrez l'annuaire des créateurs chrétiens et soutenez l'artisanat catholique."
   : (vitrineData?.hero_description || "Site vitrine client.");
+
+const ogImage = getAssetUrl(vitrineData?.hero_image);
+
+// Schema.org JSON-LD
+const schema = isAnnuaire 
+  ? {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": site.nom,
+      "url": Astro.url.href
+    }
+  : {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": site.nom,
+      "image": ogImage,
+      "description": seoDesc,
+      "telephone": vitrineData?.telephone,
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": vitrineData?.adresse || "42 Rue des Artisans, 49500 Segré-en-Anjou Bleu",
+        "addressCountry": "FR"
+      },
+      "url": Astro.url.href
+    };
 ---
 
-<Layout title={seoTitle} description={seoDesc} siteSlug={siteSlug}>
+<Layout title={seoTitle} description={seoDesc} siteSlug={siteSlug} ogImage={ogImage} schema={schema}>
   
   <!-- Navbar injectée dans le slot header -->
   <Navbar slot="header" siteNom={site.nom} siteSlug={siteSlug} />

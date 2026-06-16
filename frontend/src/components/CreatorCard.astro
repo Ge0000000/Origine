@@ -10,7 +10,7 @@ const { createur } = Astro.props;
 const logoUrl = getAssetUrl(createur.logo);
 ---
 
-<div class={`group relative overflow-hidden rounded-3xl border bg-white p-6 md:p-8 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ${createur.est_sponsorise ? 'border-amber-200 bg-gradient-to-b from-amber-50/50 to-white' : 'border-slate-100 hover:border-slate-300'}`}>
+<div class={`group relative overflow-hidden rounded-3xl border bg-white p-6 md:p-8 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl reveal-on-scroll ${createur.est_sponsorise ? 'border-amber-200 bg-gradient-to-b from-amber-50/50 to-white' : 'border-slate-100 hover:border-slate-300'}`}>
   
   {createur.est_sponsorise && (
     <div class="absolute top-0 right-0 overflow-hidden rounded-bl-3xl rounded-tr-3xl">
