@@ -45,7 +45,7 @@ const enriched = produits.map(p => {
           Nos Croix Collection Pastel
         </h2>
         <p class="text-lg text-slate-500 max-w-xl">
-          Trois coloris signature, peints à la main. Le défilement est continu.
+          Trois coloris signature, peints à la main. Glissez pour explorer librement.
         </p>
       </div>
 
@@ -55,9 +55,9 @@ const enriched = produits.map(p => {
         <div class="pointer-events-none absolute left-0 top-0 h-full w-12 sm:w-24 bg-gradient-to-r from-white via-white/80 to-transparent z-10"></div>
         <div class="pointer-events-none absolute right-0 top-0 h-full w-12 sm:w-24 bg-gradient-to-l from-white via-white/80 to-transparent z-10"></div>
 
-        <!-- Bande défilante animée en CSS (4 répétitions = 12 cartes pour une boucle parfaite) -->
-        <div id="infinite-track" class="flex gap-8 w-max py-4 select-none">
-          {[...enriched, ...enriched, ...enriched, ...enriched].map((produit, idx) => (
+        <!-- Bande défilante (3 répétitions = 9 cartes pour un scroll manuel libre et léger) -->
+        <div id="carousel-track" class="flex gap-8 overflow-x-auto select-none no-scrollbar py-4">
+          {[...enriched, ...enriched, ...enriched].map((produit, idx) => (
             <div class="carousel-card w-[290px] sm:w-[340px] shrink-0 bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500 group flex flex-col" data-index={idx}>
               <!-- Image -->
               <div class="relative overflow-hidden aspect-[3/4] bg-slate-200">
@@ -66,7 +66,7 @@ const enriched = produits.map(p => {
                     src={getAssetUrl(produit.image)}
                     alt={produit.nom}
                     class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
-                    loading={idx < 3 ? 'eager' : 'lazy'}
+                    loading={idx >= 3 && idx < 6 ? 'eager' : 'lazy'}
                   />
                 ) : (
                   <div class="w-full h-full flex items-center justify-center">
@@ -106,31 +106,118 @@ const enriched = produits.map(p => {
       </div>
 
       <script>
-        const initMarqueeTouchPause = () => {
-          const track = document.getElementById('infinite-track');
+        const initInfiniteCarousel = () => {
+          const track = document.getElementById('carousel-track');
           if (!track) return;
 
+          const cards = Array.from(track.querySelectorAll<HTMLElement>('.carousel-card'));
+          if (cards.length < 9) return;
+
+          // Mesure des largeurs pour le calcul du scroll
+          const getCardMetrics = () => {
+            const cardWidth = cards[0].offsetWidth;
+            const gap = cards[1].offsetLeft - (cards[0].offsetLeft + cardWidth);
+            const stepWidth = cardWidth + gap;
+            const groupWidth = stepWidth * 3;
+            return { cardWidth, stepWidth, groupWidth };
+          };
+
+          let { stepWidth, groupWidth } = getCardMetrics();
+
+          // Repositionner au centre sur le 2e groupe (index 3)
+          const centerScroll = () => {
+            track.scrollLeft = groupWidth;
+          };
+
+          // Positionnement initial
+          centerScroll();
+
+          // Gérer le resize
+          window.addEventListener('resize', () => {
+            const metrics = getCardMetrics();
+            stepWidth = metrics.stepWidth;
+            groupWidth = metrics.groupWidth;
+            centerScroll();
+          });
+
+          // Variables de contrôle de l'autoplay continu
+          let animationFrameId: number | undefined;
+          let lastTime = 0;
+          const speed = 40; // Pixels par seconde (défilement lent et fluide)
+          let isInteracting = false;
           let resumeTimeout: number | undefined;
+          let scrollTimeout: number | undefined;
 
-          // Pause de l'animation CSS au toucher sur mobile
-          track.addEventListener('touchstart', () => {
+          // Boucle d'animation continue (tapis roulant)
+          const tick = (timestamp: number) => {
+            if (!lastTime) lastTime = timestamp;
+            const delta = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+
+            if (!isInteracting && track) {
+              track.scrollLeft += speed * delta;
+
+              // Boucle infinie pendant le défilement automatique
+              const currentScroll = track.scrollLeft;
+              if (currentScroll >= groupWidth * 2) {
+                track.scrollLeft = currentScroll - groupWidth;
+              }
+            }
+
+            animationFrameId = requestAnimationFrame(tick);
+          };
+
+          // Lancer l'animation
+          animationFrameId = requestAnimationFrame(tick);
+
+          // Suspendre l'autoplay lors d'une interaction
+          const startInteracting = () => {
+            isInteracting = true;
             if (resumeTimeout) clearTimeout(resumeTimeout);
-            track.style.animationPlayState = 'paused';
-          }, { passive: true });
+          };
 
-          // Reprise de l'animation CSS 1s après avoir relâché le toucher
-          track.addEventListener('touchend', () => {
+          // Reprendre l'autoplay 1s après la fin de l'inactivité
+          const stopInteracting = () => {
             if (resumeTimeout) clearTimeout(resumeTimeout);
             resumeTimeout = window.setTimeout(() => {
-              track.style.animationPlayState = 'running';
-            }, 1000);
-          }, { passive: true });
+              isInteracting = false;
+              lastTime = 0; // Réinitialiser le timestamp pour éviter les sauts
+            }, 1000); // 1 seconde de pause avant reprise
+          };
+
+          // Écouteurs pour le survol souris (desktop)
+          track.addEventListener('mouseenter', startInteracting);
+          track.addEventListener('mouseleave', stopInteracting);
+
+          // Écouteurs pour le tactile (mobile)
+          track.addEventListener('touchstart', startInteracting, { passive: true });
+          track.addEventListener('touchmove', startInteracting, { passive: true });
+          track.addEventListener('touchend', stopInteracting, { passive: true });
+
+          // Recentrage silencieux debouncé (200ms) après le geste manuel
+          track.addEventListener('scroll', () => {
+            if (!isInteracting) return; // Ne pas interférer avec le défilement automatique
+
+            if (scrollTimeout) clearTimeout(scrollTimeout);
+            scrollTimeout = window.setTimeout(() => {
+              const currentScroll = track.scrollLeft;
+
+              // Trop à gauche -> recentrage sur le groupe 2
+              if (currentScroll < groupWidth - 50) {
+                track.scrollLeft = currentScroll + groupWidth;
+              }
+              // Trop à droite -> recentrage sur le groupe 2
+              else if (currentScroll >= groupWidth * 2 - 50) {
+                track.scrollLeft = currentScroll - groupWidth;
+              }
+            }, 200); // 200ms d'inactivité requis après le geste tactile
+          });
         };
 
         // Lancement immédiat et après swaps Astro
-        document.addEventListener('DOMContentLoaded', initMarqueeTouchPause);
-        document.addEventListener('astro:after-swap', initMarqueeTouchPause);
-        if (document.readyState !== 'loading') initMarqueeTouchPause();
+        document.addEventListener('DOMContentLoaded', initInfiniteCarousel);
+        document.addEventListener('astro:after-swap', initInfiniteCarousel);
+        if (document.readyState !== 'loading') initInfiniteCarousel();
       </script>
     </section>
   ) : (
@@ -175,23 +262,12 @@ const enriched = produits.map(p => {
 )}
 
 <style>
-  @keyframes marquee {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-25%); /* Décale exactement d'un groupe complet de 3 cartes */
-    }
+  /* Masquage de la scrollbar sur le track */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
-
-  #infinite-track {
-    animation: marquee 25s linear infinite;
-  }
-
-  /* Pause au survol sur desktop */
-  @media (hover: hover) {
-    #infinite-track:hover {
-      animation-play-state: paused;
-    }
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE et Edge */
+    scrollbar-width: none;  /* Firefox */
   }
 </style>
