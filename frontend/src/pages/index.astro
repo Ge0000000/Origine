@@ -135,9 +135,13 @@ const schema = isAnnuaire
         <Services services={vitrineData.services} siteSlug={siteSlug} />
       )}
       
-      <Gallery images={vitrineData?.realisations || []} siteSlug={siteSlug} />
+      {siteSlug !== 'le-croisetier' && (
+        <Gallery images={vitrineData?.realisations || []} siteSlug={siteSlug} />
+      )}
       
-      <ContactForm email={vitrineData?.email || "contact@origine.dev"} siteSlug={siteSlug} />
+      {siteSlug !== 'le-croisetier' && (
+        <ContactForm email={vitrineData?.email || "contact@origine.dev"} siteSlug={siteSlug} />
+      )}
     </>
   )}
 

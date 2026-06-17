@@ -73,12 +73,12 @@ const enriched = produits.map(p => {
         </div>
       </div>
 
-      <!-- Masques de fondu gauche/droite -->
-      <div class="pointer-events-none absolute left-0 top-0 h-full w-12 sm:w-24 bg-gradient-to-r from-white via-white/80 to-transparent z-10"></div>
-      <div class="pointer-events-none absolute right-0 top-0 h-full w-12 sm:w-24 bg-gradient-to-l from-white via-white/80 to-transparent z-10"></div>
-
       <!-- Fenêtre du carrousel -->
-      <div class="w-full">
+      <div class="w-full relative">
+        <!-- Masques de fondu gauche/droite confinés au carrousel pour ne pas voiler le titre -->
+        <div class="pointer-events-none absolute left-0 top-0 h-full w-12 sm:w-24 bg-gradient-to-r from-white via-white/80 to-transparent z-10"></div>
+        <div class="pointer-events-none absolute right-0 top-0 h-full w-12 sm:w-24 bg-gradient-to-l from-white via-white/80 to-transparent z-10"></div>
+
         <!-- Bande défilante (3 répétitions = 9 cartes) -->
         <div id="carousel-track" class="flex gap-8 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar px-4 sm:px-[calc((100vw-340px)/2)] md:px-[calc((100vw-680px)/2)] lg:px-[calc((100vw-1020px)/2)] xl:px-[calc((100vw-1116px)/2)] py-4">
           {[...enriched, ...enriched, ...enriched].map((produit, idx) => (
@@ -171,33 +171,31 @@ const enriched = produits.map(p => {
             centerScroll();
           });
 
-          // Recentrage silencieux lors du scroll
-          let isResetting = false;
+          // Recentrage silencieux DEBOUNCÉ lors du scroll
+          // Cela permet de ne pas interrompre l'inertie du geste de swipe
+          let scrollTimeout: number | undefined;
           track.addEventListener('scroll', () => {
-            if (isResetting) return;
+            if (scrollTimeout) clearTimeout(scrollTimeout);
 
-            const currentScroll = track.scrollLeft;
+            scrollTimeout = window.setTimeout(() => {
+              const currentScroll = track.scrollLeft;
 
-            // Trop à gauche
-            if (currentScroll < groupWidth - 10) {
-              isResetting = true;
-              track.classList.remove('scroll-smooth');
-              track.scrollLeft = currentScroll + groupWidth;
-              requestAnimationFrame(() => {
+              // Trop à gauche -> recentrage sur le groupe 2
+              if (currentScroll < groupWidth - 50) {
+                track.classList.remove('scroll-smooth');
+                track.scrollLeft = currentScroll + groupWidth;
+                // Force le recalcul du layout avant de rétablir le smooth
+                track.offsetHeight;
                 track.classList.add('scroll-smooth');
-                isResetting = false;
-              });
-            }
-            // Trop à droite
-            else if (currentScroll >= groupWidth * 2 - 10) {
-              isResetting = true;
-              track.classList.remove('scroll-smooth');
-              track.scrollLeft = currentScroll - groupWidth;
-              requestAnimationFrame(() => {
+              }
+              // Trop à droite -> recentrage sur le groupe 2
+              else if (currentScroll >= groupWidth * 2 - 50) {
+                track.classList.remove('scroll-smooth');
+                track.scrollLeft = currentScroll - groupWidth;
+                track.offsetHeight;
                 track.classList.add('scroll-smooth');
-                isResetting = false;
-              });
-            }
+              }
+            }, 150); // 150ms après la fin effective du défilement
           });
 
           // Interactions boutons
