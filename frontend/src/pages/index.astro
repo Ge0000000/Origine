@@ -8,6 +8,7 @@ import Gallery from '../components/Gallery.astro';
 import ContactForm from '../components/ContactForm.astro';
 import CreatorCard from '../components/CreatorCard.astro';
 import Products from '../components/Products.astro';
+import Scrollytelling from '../components/Scrollytelling.astro';
 
 import { 
   getSiteDataBySlug, 
@@ -123,7 +124,11 @@ const schema = isAnnuaire
     /* ================= LANDING PAGE VITRINE (B2B & E-COMMERCE) ================= */
     <>
       {produits.length > 0 && (
-        <Products produits={produits} />
+        <Products produits={produits} siteSlug={siteSlug} />
+      )}
+
+      {siteSlug === 'le-croisetier' && (
+        <Scrollytelling />
       )}
 
       {vitrineData?.services && produits.length === 0 && (

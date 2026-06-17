@@ -3,57 +3,222 @@ import { getAssetUrl } from '../lib/directus';
 
 interface Props {
   produits: any[];
+  siteSlug?: string;
 }
 
-const { produits } = Astro.props;
+const { produits, siteSlug = 'matikos' } = Astro.props;
+
+const isCroisetier = siteSlug === 'le-croisetier';
 ---
 
 {produits.length > 0 && (
-  <section id="produit" class="py-24 bg-white relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <div class="text-center max-w-3xl mx-auto mb-16 reveal-on-scroll">
-        <h2 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl mb-6">Le Cadeau Idéal</h2>
-        <p class="text-xl text-slate-600">Pour accompagner les grands moments de la vie avec une pièce unique.</p>
-      </div>
+  isCroisetier ? (
+    /* ================= VERSION CARROUSEL HORIZONTAL (LE CROISETIER) ================= */
+    <section id="produit" class="py-24 bg-white relative overflow-hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        
+        <!-- En-tête de section -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 reveal-on-scroll">
+          <div class="max-w-2xl">
+            <h2 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl mb-4 font-inter">
+              Nos Croix Collection Pastel
+            </h2>
+            <p class="text-lg text-slate-600">
+              Découvrez nos trois modèles signatures peints à la main. Une pièce unique pour votre foyer ou à offrir.
+            </p>
+          </div>
+          
+          <!-- Boutons de contrôle de défilement (Desktop) -->
+          <div class="hidden md:flex gap-4 mt-6 md:mt-0">
+            <button 
+              id="btn-prev" 
+              class="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all hover:scale-105 active:scale-95 shadow-sm"
+              aria-label="Modèle précédent"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </button>
+            <button 
+              id="btn-next" 
+              class="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all hover:scale-105 active:scale-95 shadow-sm"
+              aria-label="Modèle suivant"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </button>
+          </div>
+        </div>
 
-      <div class="grid md:grid-cols-2 gap-12 items-center">
-        {produits.map((produit) => (
-          <>
-            <div class="relative rounded-3xl overflow-hidden shadow-2xl reveal-on-scroll group">
-              {produit.image ? (
-                <img 
-                  src={getAssetUrl(produit.image)} 
-                  alt={produit.nom}
-                  class="w-full object-cover aspect-[4/5] transform transition-transform duration-700 group-hover:scale-105"
-                  loading="lazy"
-                />
-              ) : (
-                <div class="w-full aspect-[4/5] bg-slate-100 flex items-center justify-center">
-                  <span class="text-slate-400">Photo indisponible</span>
+        <!-- Carrousel avec défilement horizontal -->
+        <div 
+          id="product-carousel" 
+          class="flex overflow-x-auto gap-8 pb-12 snap-x snap-mandatory scrollbar-none scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+        >
+          {produits.map((produit, index) => {
+            // Déterminer la couleur du badge en fonction du nom du produit
+            let badgeBg = 'bg-blue-50 text-blue-700 border-blue-100';
+            let badgeLabel = 'Modèle Classique';
+            if (produit.nom.includes('Sauge') || produit.nom.includes('vert')) {
+              badgeBg = 'bg-emerald-50 text-emerald-700 border-emerald-100';
+              badgeLabel = 'Vert Sauge';
+            } else if (produit.nom.includes('Rose')) {
+              badgeBg = 'bg-rose-50 text-rose-700 border-rose-100';
+              badgeLabel = 'Rose Poudré';
+            } else if (produit.nom.includes('Bleu')) {
+              badgeBg = 'bg-indigo-50 text-indigo-700 border-indigo-100';
+              badgeLabel = 'Bleu Céleste';
+            }
+
+            return (
+              <div 
+                class="w-[85vw] sm:w-[380px] md:w-[420px] shrink-0 snap-center bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group flex flex-col justify-between"
+              >
+                <div class="relative overflow-hidden aspect-[4/5] bg-slate-100">
+                  {produit.image ? (
+                    <img 
+                      src={getAssetUrl(produit.image)} 
+                      alt={produit.nom}
+                      class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+                      loading={index === 0 ? "eager" : "lazy"}
+                    />
+                  ) : (
+                    <div class="w-full h-full flex items-center justify-center bg-slate-200">
+                      <span class="text-slate-400 font-medium text-sm">Photo non disponible</span>
+                    </div>
+                  )}
+                  <span class={`absolute top-6 left-6 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border shadow-sm ${badgeBg}`}>
+                    {badgeLabel}
+                  </span>
                 </div>
-              )}
-            </div>
-
-            <div class="flex flex-col justify-center space-y-8 reveal-on-scroll" style="transition-delay: 200ms;">
-              <div>
-                <h3 class="text-3xl font-bold text-slate-900 mb-4">{produit.nom}</h3>
-                <div class="prose prose-lg text-slate-600 mb-8" set:html={produit.description} />
                 
-                <div class="flex items-center gap-6">
-                  <a 
-                    href={produit.lien_stripe} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white transition-all bg-emerald-600 rounded-full hover:bg-emerald-700 hover:shadow-lg hover:-translate-y-1 focus:ring-4 focus:ring-emerald-300"
-                  >
-                    Commander — {produit.prix} €
-                  </a>
+                <div class="p-8 flex-grow flex flex-col justify-between space-y-6">
+                  <div>
+                    <h3 class="text-2xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                      {produit.nom}
+                    </h3>
+                    <div class="mt-3 text-slate-600 prose prose-sm line-clamp-3" set:html={produit.description} />
+                  </div>
+                  
+                  <div class="flex items-center justify-between pt-4 border-t border-slate-150">
+                    <span class="text-3xl font-extrabold text-slate-950 font-inter">
+                      {produit.prix} €
+                    </span>
+                    <a 
+                      href={produit.lien_stripe} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center justify-center px-6 py-3 text-sm font-bold text-white transition-all bg-blue-600 rounded-full hover:bg-blue-700 hover:shadow-md active:scale-98 focus:ring-2 focus:ring-blue-500/20"
+                    >
+                      Acheter
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 ml-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                      </svg>
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          </>
-        ))}
+            );
+          })}
+        </div>
       </div>
-    </div>
-  </section>
+
+      <script>
+        // Logique de navigation du carrousel
+        const carousel = document.getElementById('product-carousel');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+
+        if (carousel && btnPrev && btnNext) {
+          const scrollAmount = 450; // Largeur d'une carte + gap approximatif
+          
+          btnPrev.addEventListener('click', () => {
+            carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+          });
+          
+          btnNext.addEventListener('click', () => {
+            carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+          });
+
+          // Désactiver ou griser les boutons aux extrémités (optionnel mais UX++)
+          const toggleButtons = () => {
+            const isAtStart = carousel.scrollLeft <= 10;
+            const isAtEnd = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 10;
+            
+            btnPrev.style.opacity = isAtStart ? '0.4' : '1';
+            btnPrev.style.pointerEvents = isAtStart ? 'none' : 'auto';
+            
+            btnNext.style.opacity = isAtEnd ? '0.4' : '1';
+            btnNext.style.pointerEvents = isAtEnd ? 'none' : 'auto';
+          };
+          
+          carousel.addEventListener('scroll', toggleButtons);
+          // Initialisation
+          toggleButtons();
+        }
+      </script>
+      
+      <style>
+        /* Masquer la scrollbar par défaut sur tous les navigateurs */
+        .scrollbar-none::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-none {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      </style>
+    </section>
+  ) : (
+    /* ================= COMPORTEMENT PAR DÉFAUT (GRID EN CAS DE PRODUITS COMPAGNIE) ================= */
+    <section id="produit" class="py-24 bg-white relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center max-w-3xl mx-auto mb-16 reveal-on-scroll">
+          <h2 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl mb-6">Le Cadeau Idéal</h2>
+          <p class="text-xl text-slate-600">Pour accompagner les grands moments de la vie avec une pièce unique.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+          {produits.map((produit) => (
+            <>
+              <div class="relative rounded-3xl overflow-hidden shadow-2xl reveal-on-scroll group">
+                {produit.image ? (
+                  <img 
+                    src={getAssetUrl(produit.image)} 
+                    alt={produit.nom}
+                    class="w-full object-cover aspect-[4/5] transform transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="w-full aspect-[4/5] bg-slate-100 flex items-center justify-center">
+                    <span class="text-slate-400">Photo indisponible</span>
+                  </div>
+                )}
+              </div>
+
+              <div class="flex flex-col justify-center space-y-8 reveal-on-scroll" style="transition-delay: 200ms;">
+                <div>
+                  <h3 class="text-3xl font-bold text-slate-900 mb-4">{produit.nom}</h3>
+                  <div class="prose prose-lg text-slate-600 mb-8" set:html={produit.description} />
+                  
+                  <div class="flex items-center gap-6">
+                    <a 
+                      href={produit.lien_stripe} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white transition-all bg-emerald-600 rounded-full hover:bg-emerald-700 hover:shadow-lg hover:-translate-y-1 focus:ring-4 focus:ring-emerald-300"
+                    >
+                      Commander — {produit.prix} €
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
 )}
+
