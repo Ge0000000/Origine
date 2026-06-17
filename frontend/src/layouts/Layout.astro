@@ -130,6 +130,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || Astro.url.origin)
 </html>
 
 <style is:global>
+  /* Confinement horizontal global pour bloquer le scroll parasite tout en préservant le sticky vertical */
+  html, body {
+    overflow-x: clip;
+    max-width: 100%;
+    position: relative;
+  }
+
   /* Définition des familles de polices globales */
   .font-outfit {
     font-family: 'Outfit', sans-serif;

@@ -75,7 +75,7 @@ const btnTheme = btnThemeMap[siteSlug] || btnThemeMap['matikos'];
   </div>
 
   <!-- Menu Mobile Coulissant -->
-  <div id="mobile-menu" class="fixed inset-0 z-40 bg-white/95 backdrop-blur-xl translate-x-full transition-transform duration-300 md:hidden flex flex-col pt-24 px-6 pb-8 h-[100dvh]">
+  <div id="mobile-menu" class="fixed inset-0 z-40 bg-white/95 backdrop-blur-xl translate-x-full invisible pointer-events-none transition-all duration-300 md:hidden flex flex-col pt-24 px-6 pb-8 h-[100dvh]">
     <nav class="flex flex-col space-y-6 text-center">
       {navLinks.map((link) => (
         <a 
@@ -112,12 +112,12 @@ const btnTheme = btnThemeMap[siteSlug] || btnThemeMap['matikos'];
     const toggleMenu = () => {
       isOpen = !isOpen;
       if (isOpen) {
-        menu.classList.remove('translate-x-full');
+        menu.classList.remove('translate-x-full', 'invisible', 'pointer-events-none');
         document.body.style.overflow = 'hidden'; // Empêche le scroll en arrière-plan
         burgerIcon?.classList.add('opacity-0');
         closeIcon?.classList.remove('opacity-0');
       } else {
-        menu.classList.add('translate-x-full');
+        menu.classList.add('translate-x-full', 'invisible', 'pointer-events-none');
         document.body.style.overflow = '';
         burgerIcon?.classList.remove('opacity-0');
         closeIcon?.classList.add('opacity-0');
