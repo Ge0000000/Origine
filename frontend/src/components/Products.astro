@@ -39,50 +39,26 @@ const enriched = produits.map(p => {
     ============================================================= */
     <section id="produit" class="py-20 bg-white relative overflow-hidden">
 
-      <!-- En-tête avec navigation -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 reveal-on-scroll">
-        <div>
-          <h2 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl mb-3 font-inter">
-            Nos Croix Collection Pastel
-          </h2>
-          <p class="text-lg text-slate-500 max-w-xl">
-            Trois coloris signature, peints à la main. Faites glisser pour découvrir.
-          </p>
-        </div>
-
-        <!-- Boutons de navigation (visibles sur desktop) -->
-        <div class="hidden sm:flex gap-3">
-          <button
-            id="carousel-prev"
-            class="flex items-center justify-center w-12 h-12 rounded-full border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 hover:border-slate-300 active:scale-95 transition-all shadow-sm"
-            aria-label="Produit précédent"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
-            </svg>
-          </button>
-          <button
-            id="carousel-next"
-            class="flex items-center justify-center w-12 h-12 rounded-full border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 hover:border-slate-300 active:scale-95 transition-all shadow-sm"
-            aria-label="Produit suivant"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
-            </svg>
-          </button>
-        </div>
+      <!-- En-tête simple sans boutons -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 reveal-on-scroll">
+        <h2 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl mb-3 font-inter">
+          Nos Croix Collection Pastel
+        </h2>
+        <p class="text-lg text-slate-500 max-w-xl">
+          Trois coloris signature, peints à la main. Le défilement est continu.
+        </p>
       </div>
 
       <!-- Fenêtre du carrousel -->
-      <div class="w-full relative">
+      <div class="w-full relative overflow-hidden">
         <!-- Masques de fondu gauche/droite confinés au carrousel pour ne pas voiler le titre -->
         <div class="pointer-events-none absolute left-0 top-0 h-full w-12 sm:w-24 bg-gradient-to-r from-white via-white/80 to-transparent z-10"></div>
         <div class="pointer-events-none absolute right-0 top-0 h-full w-12 sm:w-24 bg-gradient-to-l from-white via-white/80 to-transparent z-10"></div>
 
-        <!-- Bande défilante (3 répétitions = 9 cartes) -->
-        <div id="carousel-track" class="flex gap-8 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar px-4 sm:px-[calc((100vw-340px)/2)] md:px-[calc((100vw-680px)/2)] lg:px-[calc((100vw-1020px)/2)] xl:px-[calc((100vw-1116px)/2)] py-4">
-          {[...enriched, ...enriched, ...enriched].map((produit, idx) => (
-            <div class="carousel-card w-[290px] sm:w-[340px] shrink-0 bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500 group flex flex-col snap-center" data-index={idx}>
+        <!-- Bande défilante animée en CSS (4 répétitions = 12 cartes pour une boucle parfaite) -->
+        <div id="infinite-track" class="flex gap-8 w-max py-4 select-none">
+          {[...enriched, ...enriched, ...enriched, ...enriched].map((produit, idx) => (
+            <div class="carousel-card w-[290px] sm:w-[340px] shrink-0 bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500 group flex flex-col" data-index={idx}>
               <!-- Image -->
               <div class="relative overflow-hidden aspect-[3/4] bg-slate-200">
                 {produit.image ? (
@@ -90,7 +66,7 @@ const enriched = produits.map(p => {
                     src={getAssetUrl(produit.image)}
                     alt={produit.nom}
                     class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
-                    loading={idx >= 3 && idx < 6 ? 'eager' : 'lazy'}
+                    loading={idx < 3 ? 'eager' : 'lazy'}
                   />
                 ) : (
                   <div class="w-full h-full flex items-center justify-center">
@@ -130,143 +106,31 @@ const enriched = produits.map(p => {
       </div>
 
       <script>
-        const initInfiniteCarousel = () => {
-          const track = document.getElementById('carousel-track');
-          const prevBtn = document.getElementById('carousel-prev');
-          const nextBtn = document.getElementById('carousel-next');
-
+        const initMarqueeTouchPause = () => {
+          const track = document.getElementById('infinite-track');
           if (!track) return;
 
-          const cards = Array.from(track.querySelectorAll<HTMLElement>('.carousel-card'));
-          if (cards.length < 9) return;
-
-          // Mesure des largeurs pour le calcul du scroll
-          const getCardMetrics = () => {
-            const cardWidth = cards[0].offsetWidth;
-            const gap = cards[1].offsetLeft - (cards[0].offsetLeft + cardWidth);
-            const stepWidth = cardWidth + gap;
-            const groupWidth = stepWidth * 3;
-            return { cardWidth, stepWidth, groupWidth };
-          };
-
-          let { stepWidth, groupWidth } = getCardMetrics();
-
-          // Repositionner au centre sur le 2e groupe
-          const centerScroll = () => {
-            track.classList.remove('scroll-smooth');
-            track.scrollLeft = groupWidth;
-            setTimeout(() => {
-              track.classList.add('scroll-smooth');
-            }, 50);
-          };
-
-          // Positionnement initial
-          centerScroll();
-
-          // Gérer le resize
-          window.addEventListener('resize', () => {
-            const metrics = getCardMetrics();
-            stepWidth = metrics.stepWidth;
-            groupWidth = metrics.groupWidth;
-            centerScroll();
-          });
-
-          // Recentrage silencieux DEBOUNCÉ lors du scroll
-          // Cela permet de ne pas interrompre l'inertie du geste de swipe
-          let scrollTimeout: number | undefined;
-          track.addEventListener('scroll', () => {
-            if (scrollTimeout) clearTimeout(scrollTimeout);
-
-            scrollTimeout = window.setTimeout(() => {
-              const currentScroll = track.scrollLeft;
-
-              // Trop à gauche -> recentrage sur le groupe 2
-              if (currentScroll < groupWidth - 50) {
-                track.classList.remove('scroll-smooth');
-                track.scrollLeft = currentScroll + groupWidth;
-                // Force le recalcul du layout avant de rétablir le smooth
-                track.offsetHeight;
-                track.classList.add('scroll-smooth');
-              }
-              // Trop à droite -> recentrage sur le groupe 2
-              else if (currentScroll >= groupWidth * 2 - 50) {
-                track.classList.remove('scroll-smooth');
-                track.scrollLeft = currentScroll - groupWidth;
-                track.offsetHeight;
-                track.classList.add('scroll-smooth');
-              }
-            }, 150); // 150ms après la fin effective du défilement
-          });
-
-          // Logique d'Auto-Play
-          let autoplayInterval: number | undefined;
           let resumeTimeout: number | undefined;
-          let isInteracting = false;
 
-          const startAutoplay = () => {
-            if (autoplayInterval) clearInterval(autoplayInterval);
-            autoplayInterval = window.setInterval(() => {
-              if (!isInteracting && track) {
-                track.scrollLeft += stepWidth;
-              }
-            }, 3000); // Défilement automatique toutes les 3 secondes
-          };
+          // Pause de l'animation CSS au toucher sur mobile
+          track.addEventListener('touchstart', () => {
+            if (resumeTimeout) clearTimeout(resumeTimeout);
+            track.style.animationPlayState = 'paused';
+          }, { passive: true });
 
-          const stopAutoplay = () => {
-            if (autoplayInterval) {
-              clearInterval(autoplayInterval);
-              autoplayInterval = undefined;
-            }
-          };
-
-          // Met l'autoplay en pause lors d'une interaction et le relance après 4s
-          const handleInteraction = () => {
-            isInteracting = true;
-            stopAutoplay();
-
+          // Reprise de l'animation CSS 1s après avoir relâché le toucher
+          track.addEventListener('touchend', () => {
             if (resumeTimeout) clearTimeout(resumeTimeout);
             resumeTimeout = window.setTimeout(() => {
-              isInteracting = false;
-              startAutoplay();
-            }, 4000); // Reprise automatique après 4s d'inactivité
-          };
-
-          // Événements survol souris (desktop)
-          track.addEventListener('mouseenter', () => {
-            isInteracting = true;
-            stopAutoplay();
-          });
-          track.addEventListener('mouseleave', () => {
-            isInteracting = false;
-            startAutoplay();
-          });
-
-          // Événements tactile (mobile)
-          track.addEventListener('touchstart', handleInteraction, { passive: true });
-          track.addEventListener('touchmove', handleInteraction, { passive: true });
-
-          // Interactions boutons (bloquent temporairement l'autoplay)
-          if (prevBtn) {
-            prevBtn.addEventListener('click', () => {
-              handleInteraction();
-              track.scrollLeft -= stepWidth;
-            });
-          }
-          if (nextBtn) {
-            nextBtn.addEventListener('click', () => {
-              handleInteraction();
-              track.scrollLeft += stepWidth;
-            });
-          }
-
-          // Lancement de l'autoplay initial
-          startAutoplay();
+              track.style.animationPlayState = 'running';
+            }, 1000);
+          }, { passive: true });
         };
 
         // Lancement immédiat et après swaps Astro
-        document.addEventListener('DOMContentLoaded', initInfiniteCarousel);
-        document.addEventListener('astro:after-swap', initInfiniteCarousel);
-        if (document.readyState !== 'loading') initInfiniteCarousel();
+        document.addEventListener('DOMContentLoaded', initMarqueeTouchPause);
+        document.addEventListener('astro:after-swap', initMarqueeTouchPause);
+        if (document.readyState !== 'loading') initMarqueeTouchPause();
       </script>
     </section>
   ) : (
@@ -311,12 +175,23 @@ const enriched = produits.map(p => {
 )}
 
 <style>
-  /* Masquage de la scrollbar sur le track */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-25%); /* Décale exactement d'un groupe complet de 3 cartes */
+    }
   }
-  .no-scrollbar {
-    -ms-overflow-style: none;  /* IE et Edge */
-    scrollbar-width: none;  /* Firefox */
+
+  #infinite-track {
+    animation: marquee 25s linear infinite;
+  }
+
+  /* Pause au survol sur desktop */
+  @media (hover: hover) {
+    #infinite-track:hover {
+      animation-play-state: paused;
+    }
   }
 </style>
