@@ -37,16 +37,16 @@ const enriched = produits.map(p => {
        se place au milieu. Quand le scroll déborde, on recentre
        immédiatement sans transition, ce qui simule une boucle infinie.
     ============================================================= */
-    <section id="produit" class="py-12 bg-white relative overflow-hidden">
+    <section id="produit" class="py-10 bg-white relative overflow-hidden">
 
       <!-- En-tête avec navigation -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 reveal-on-scroll">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 reveal-on-scroll">
         <div>
-          <h2 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl mb-2 font-inter">
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mb-2 font-inter">
             Nos Croix Collection Pastel
           </h2>
-          <p class="text-base text-slate-500 max-w-xl">
-            Trois coloris signature, peints à la main.
+          <p class="text-base sm:text-lg text-slate-500 max-w-xl">
+            Trois coloris signature, peints à la main. Faites glisser pour découvrir.
           </p>
         </div>
 
@@ -57,7 +57,7 @@ const enriched = produits.map(p => {
             class="flex items-center justify-center w-11 h-11 rounded-full border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 hover:border-slate-300 active:scale-95 transition-all shadow-sm cursor-pointer"
             aria-label="Produit précédent"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
             </svg>
           </button>
@@ -66,7 +66,7 @@ const enriched = produits.map(p => {
             class="flex items-center justify-center w-11 h-11 rounded-full border border-slate-200 text-slate-600 bg-white hover:bg-slate-50 hover:border-slate-300 active:scale-95 transition-all shadow-sm cursor-pointer"
             aria-label="Produit suivant"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
             </svg>
           </button>
@@ -79,49 +79,46 @@ const enriched = produits.map(p => {
         <div class="pointer-events-none absolute left-0 top-0 h-full w-12 sm:w-24 bg-gradient-to-r from-white via-white/80 to-transparent z-10"></div>
         <div class="pointer-events-none absolute right-0 top-0 h-full w-12 sm:w-24 bg-gradient-to-l from-white via-white/80 to-transparent z-10"></div>
 
-        <!-- Bande défilante (3 répétitions = 9 cartes) avec cartes compactes overlay -->
-        <div id="carousel-track" class="flex gap-8 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar px-4 sm:px-[calc((100vw-320px)/2)] md:px-[calc((100vw-680px)/2)] lg:px-[calc((100vw-1020px)/2)] xl:px-[calc((100vw-1116px)/2)] py-4">
+        <!-- Bande défilante (3 répétitions = 9 cartes) -->
+        <div id="carousel-track" class="flex gap-8 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar px-4 sm:px-[calc((100vw-340px)/2)] md:px-[calc((100vw-680px)/2)] lg:px-[calc((100vw-1020px)/2)] xl:px-[calc((100vw-1116px)/2)] py-4">
           {[...enriched, ...enriched, ...enriched].map((produit, idx) => (
-            <div class="carousel-card relative w-[280px] sm:w-[320px] shrink-0 aspect-[3/4] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group snap-center" data-index={idx}>
-              <!-- Image de fond prenant 100% de la carte -->
-              {produit.image ? (
-                <img
-                  src={getAssetUrl(produit.image)}
-                  alt={produit.nom}
-                  class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
-                  loading={idx >= 3 && idx < 6 ? 'eager' : 'lazy'}
-                />
-              ) : (
-                <div class="w-full h-full bg-slate-200 flex items-center justify-center">
-                  <span class="text-slate-400 text-sm">Photo bientôt disponible</span>
-                </div>
-              )}
+            <div class="carousel-card w-[290px] sm:w-[340px] shrink-0 bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500 group flex flex-col snap-center" data-index={idx}>
+              <!-- Image carrée compacte -->
+              <div class="relative overflow-hidden aspect-square bg-slate-200">
+                {produit.image ? (
+                  <img
+                    src={getAssetUrl(produit.image)}
+                    alt={produit.nom}
+                    class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+                    loading={idx >= 3 && idx < 6 ? 'eager' : 'lazy'}
+                  />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center">
+                    <span class="text-slate-400 text-sm">Photo bientôt disponible</span>
+                  </div>
+                )}
+                <span class={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border shadow-sm ${produit.badgeBg}`}>
+                  {produit.badgeLabel}
+                </span>
+              </div>
 
-              <!-- Badge en haut à gauche -->
-              <span class={`absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-sm z-20 ${produit.badgeBg}`}>
-                {produit.badgeLabel}
-              </span>
-
-              <!-- Overlay dégradé sombre en bas -->
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent z-10 pointer-events-none"></div>
-
-              <!-- Contenu textuel et actions positionnés en absolu sur l'overlay (z-20) -->
-              <div class="absolute inset-x-0 bottom-0 p-6 z-20 flex flex-col gap-3 text-white">
+              <!-- Infos avec hauteur réduite -->
+              <div class="p-4 sm:p-5 flex flex-col gap-3 flex-grow justify-between">
                 <div>
-                  <h3 class="text-lg sm:text-xl font-bold leading-tight drop-shadow-sm">{produit.nom}</h3>
-                  <div class="mt-1 text-slate-300 text-xs line-clamp-2 drop-shadow-sm" set:html={produit.description} />
+                  <h3 class="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors leading-tight">{produit.nom}</h3>
+                  <div class="mt-1 text-slate-500 text-sm line-clamp-2 prose prose-sm hidden sm:block" set:html={produit.description} />
                 </div>
-                <div class="flex items-center justify-between border-t border-white/10 pt-3 mt-1">
-                  <span class="text-xl sm:text-2xl font-extrabold font-inter">{produit.prix}&thinsp;€</span>
+                <div class="flex items-center justify-between border-t border-slate-100 pt-3">
+                  <span class="text-xl sm:text-2xl font-extrabold text-slate-900 font-inter">{produit.prix}&thinsp;€</span>
                   <a
                     href={produit.lien_stripe}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="inline-flex items-center gap-1.5 px-4.5 py-2 text-xs font-bold text-white bg-blue-600 rounded-full hover:bg-blue-500 active:scale-95 transition-all shadow-sm hover:shadow-md border border-blue-500/20"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-blue-600 rounded-full hover:bg-blue-700 active:scale-95 transition-all shadow-sm hover:shadow-md cursor-pointer"
                     onclick="event.stopPropagation()"
                   >
                     Acheter
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                     </svg>
                   </a>
@@ -174,62 +171,20 @@ const enriched = produits.map(p => {
             centerScroll();
           });
 
-          // Logique d'Auto-Play intelligent avec pause/reprise
-          let autoPlayInterval: number | undefined;
-          let resumeTimeout: number | undefined;
-          const AUTO_PLAY_DELAY = 3000; // Défilement toutes les 3 secondes
-          const RESUME_DELAY = 4000;    // Reprise après 4 secondes d'inactivité
-
-          const startAutoPlay = () => {
-            stopAutoPlay();
-            autoPlayInterval = window.setInterval(() => {
-              track.scrollLeft += stepWidth;
-            }, AUTO_PLAY_DELAY);
-          };
-
-          const stopAutoPlay = () => {
-            if (autoPlayInterval) {
-              clearInterval(autoPlayInterval);
-              autoPlayInterval = undefined;
-            }
-          };
-
-          const pauseAutoPlayTemporarily = () => {
-            stopAutoPlay();
-            if (resumeTimeout) clearTimeout(resumeTimeout);
-            resumeTimeout = window.setTimeout(() => {
-              startAutoPlay();
-            }, RESUME_DELAY);
-          };
-
-          // Lancement par défaut
-          startAutoPlay();
-
-          // Suspension au survol (souris) et au toucher
-          track.addEventListener('mouseenter', stopAutoPlay);
-          track.addEventListener('mouseleave', startAutoPlay);
-          track.addEventListener('touchstart', stopAutoPlay, { passive: true });
-          track.addEventListener('touchend', pauseAutoPlayTemporarily, { passive: true });
-
           // Recentrage silencieux DEBOUNCÉ lors du scroll
           let scrollTimeout: number | undefined;
           track.addEventListener('scroll', () => {
-            // Si l'utilisateur scrolle manuellement, suspendre temporairement l'auto-play
-            pauseAutoPlayTemporarily();
-
             if (scrollTimeout) clearTimeout(scrollTimeout);
 
             scrollTimeout = window.setTimeout(() => {
               const currentScroll = track.scrollLeft;
 
-              // Trop à gauche -> recentrage sur le groupe 2
               if (currentScroll < groupWidth - 50) {
                 track.classList.remove('scroll-smooth');
                 track.scrollLeft = currentScroll + groupWidth;
                 track.offsetHeight;
                 track.classList.add('scroll-smooth');
               }
-              // Trop à droite -> recentrage sur le groupe 2
               else if (currentScroll >= groupWidth * 2 - 50) {
                 track.classList.remove('scroll-smooth');
                 track.scrollLeft = currentScroll - groupWidth;
@@ -239,17 +194,60 @@ const enriched = produits.map(p => {
             }, 150);
           });
 
+          // Logique d'Auto-Play temporisé avec pause intelligente
+          let autoplayInterval: number | undefined;
+          let resumeTimeout: number | undefined;
+
+          const startAutoplay = () => {
+            if (autoplayInterval) clearInterval(autoplayInterval);
+            autoplayInterval = window.setInterval(() => {
+              track.scrollLeft += stepWidth;
+            }, 3000); // Défilement automatique toutes les 3s
+          };
+
+          const stopAutoplay = () => {
+            if (autoplayInterval) {
+              clearInterval(autoplayInterval);
+              autoplayInterval = undefined;
+            }
+          };
+
+          const pauseAndDelayResume = (delay = 4000) => {
+            stopAutoplay();
+            if (resumeTimeout) clearTimeout(resumeTimeout);
+            resumeTimeout = window.setTimeout(startAutoplay, delay);
+          };
+
+          // Démarrage initial
+          startAutoplay();
+
+          // Pause au survol de la souris
+          track.addEventListener('mouseenter', stopAutoplay);
+          track.addEventListener('mouseleave', () => {
+            pauseAndDelayResume(1000); // Reprend rapidement après la sortie
+          });
+
+          // Pause au toucher (mobile/tablette)
+          track.addEventListener('touchstart', () => {
+            stopAutoplay();
+            if (resumeTimeout) clearTimeout(resumeTimeout);
+          }, { passive: true });
+
+          track.addEventListener('touchend', () => {
+            pauseAndDelayResume(4000); // Reprend après 4s d'inactivité
+          }, { passive: true });
+
           // Interactions boutons
           if (prevBtn) {
             prevBtn.addEventListener('click', () => {
-              pauseAutoPlayTemporarily();
               track.scrollLeft -= stepWidth;
+              pauseAndDelayResume(4000);
             });
           }
           if (nextBtn) {
             nextBtn.addEventListener('click', () => {
-              pauseAutoPlayTemporarily();
               track.scrollLeft += stepWidth;
+              pauseAndDelayResume(4000);
             });
           }
         };
